@@ -20,6 +20,7 @@ import Layout from '@/components/Layout';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Toaster } from '@/components/ui/toaster';
 import ProfileSettings from '@/components/settings/ProfileSettings';
+import AppointmentsView from '@/components/appointments/AppointmentsView';
 
 // Export the View type for use in other components
 export type { View } from '@/types';
@@ -55,6 +56,7 @@ export default function App() {
                 <Route path="inventory" element={<Inventory />} />
                 <Route path="installers" element={<InstallersView />} />
                 <Route path="installations" element={<InstallationsView />} />
+                <Route path="appointments" element={<AppointmentsView />} />
                 <Route path="quality" element={<QualityDashboard />} />
                 <Route path="training" element={<TrainingDashboard />} />
                 <Route path="analytics" element={<Analytics />} />

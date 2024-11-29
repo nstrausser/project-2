@@ -1,171 +1,137 @@
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { toast } from 'sonner';
-import AppointmentDialog from './AppointmentDialog';
-import TimelineView from './TimelineView';
-import type { Appointment } from '@/types';
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { AppointmentDialog } from './AppointmentDialog';
+import type { Appointment } from '@/types/appointment';
+import { Calendar, Clock, User } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
-// Get today's date and next 6 days
-const today = new Date();
-const formatDate = (date: Date) => date.toISOString().split('T')[0];
-const dates = Array.from({ length: 7 }, (_, i) => {
-  const date = new Date(today);
-  date.setDate(today.getDate() + i);
-  return formatDate(date);
-});
-
-// Mock data for appointments with some multi-day appointments
 const mockAppointments: Appointment[] = [
   {
     id: '1',
-    customerName: '#1206 E. KRAENZLER',
-    customerPhone: '555-0123',
-    customerEmail: 'kraenzler@example.com',
-    vehicleInfo: '#1206 E. KRAENZLER - BMW X1 - FULL WRAP',
-    date: dates[0],
-    time: '09:00',
-    estimatedDuration: 960, // 2-day installation
-    installerId: '1',
+    title: 'Full Vehicle PPF',
+    description: 'Complete vehicle protection film installation',
+    startTime: new Date('2024-03-20T09:00:00'),
+    endTime: new Date('2024-03-20T17:00:00'),
+    customerId: 'cust1',
+    customerName: 'John Doe',
+    installerId: 'inst1',
+    installerName: 'Mike Smith',
     status: 'scheduled',
-    estimatedSquareFeet: 150,
-    serviceType: 'Full Body',
-    quotedPrice: 2499.99,
+    vehicleInfo: {
+      make: 'Tesla',
+      model: 'Model 3',
+      year: '2023',
+      color: 'Red',
+    },
+    services: ['Full Front PPF', 'Door Edges'],
+    createdAt: new Date(),
+    updatedAt: new Date(),
   },
-  {
-    id: '2',
-    customerName: 'MBNO',
-    customerPhone: '555-0124',
-    customerEmail: 'mbno@example.com',
-    vehicleInfo: 'MBNO - GLE53 - FULL SATIN WRAP',
-    date: dates[1],
-    time: '09:00',
-    estimatedDuration: 1440, // 3-day installation
-    installerId: '2',
-    status: 'confirmed',
-    estimatedSquareFeet: 175,
-    serviceType: 'Full Body',
-    quotedPrice: 3299.99,
-  },
-  {
-    id: '3',
-    customerName: 'MBNO',
-    customerPhone: '555-0125',
-    customerEmail: 'mbno@example.com',
-    vehicleInfo: 'MBNO - GLE53 - FULL SATIN WRAP',
-    date: dates[1],
-    time: '09:00',
-    estimatedDuration: 1440, // 3-day installation
-    installerId: '3',
-    status: 'scheduled',
-    estimatedSquareFeet: 200,
-    serviceType: 'Full Body',
-    quotedPrice: 4199.99,
-  },
-];
-
-export const installers = [
-  { id: '1', name: 'Matt Anderson' },
-  { id: '2', name: 'Shawn Williams' },
-  { id: '3', name: 'Brandon Davis' },
-  { id: '4', name: 'Kevin Thompson' },
+  // Add more mock appointments as needed
 ];
 
 export default function AppointmentsView() {
   const [appointments, setAppointments] = useState<Appointment[]>(mockAppointments);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [selectedInstaller, setSelectedInstaller] = useState<string>('all');
-  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | undefined>();
 
-  const handleAppointmentClick = (appointment: Appointment) => {
-    setSelectedAppointment(appointment);
-    setIsDialogOpen(true);
+  const handleSave = (appointmentData: Partial<Appointment>) => {
+    if (selectedAppointment) {
+      // Update existing appointment
+      setAppointments(appointments.map(app => 
+        app.id === selectedAppointment.id 
+          ? { ...app, ...appointmentData }
+          : app
+      ));
+    } else {
+      // Create new appointment
+      const newAppointment: Appointment = {
+        id: Math.random().toString(36).substr(2, 9),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        ...appointmentData,
+      } as Appointment;
+      setAppointments([...appointments, newAppointment]);
+    }
   };
 
-  const handleAppointmentUpdate = (updatedAppointment: Appointment) => {
-    setAppointments((prev) =>
-      prev.map((apt) =>
-        apt.id === updatedAppointment.id ? { ...apt, ...updatedAppointment } : apt
-      )
-    );
-    toast.success('Appointment updated successfully');
+  const getStatusColor = (status: Appointment['status']) => {
+    switch (status) {
+      case 'scheduled':
+        return 'default';
+      case 'in-progress':
+        return 'warning';
+      case 'completed':
+        return 'success';
+      case 'cancelled':
+        return 'destructive';
+      default:
+        return 'secondary';
+    }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Appointments</h1>
-          <p className="text-muted-foreground">
-            Schedule and manage installation appointments.
-          </p>
-        </div>
-        <Button onClick={() => setIsDialogOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          New Appointment
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-3xl font-bold tracking-tight">Appointments</h2>
+        <Button onClick={() => {
+          setSelectedAppointment(undefined);
+          setDialogOpen(true);
+        }}>
+          Add Appointment
         </Button>
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="scheduled">Scheduled</SelectItem>
-            <SelectItem value="confirmed">Confirmed</SelectItem>
-            <SelectItem value="in-progress">In Progress</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="cancelled">Cancelled</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={selectedInstaller} onValueChange={setSelectedInstaller}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by installer" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Installers</SelectItem>
-            {installers.map((installer) => (
-              <SelectItem key={installer.id} value={installer.id}>
-                {installer.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="rounded-lg border bg-card">
-        <TimelineView
-          appointments={appointments}
-          onAppointmentClick={handleAppointmentClick}
-          onAppointmentUpdate={handleAppointmentUpdate}
-          selectedInstallerId={selectedInstaller === 'all' ? undefined : selectedInstaller}
-        />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {appointments.map((appointment) => (
+          <Card key={appointment.id} className="cursor-pointer hover:bg-muted/50"
+            onClick={() => {
+              setSelectedAppointment(appointment);
+              setDialogOpen(true);
+            }}>
+            <CardHeader>
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle>{appointment.title}</CardTitle>
+                  <CardDescription>{appointment.customerName}</CardDescription>
+                </div>
+                <Badge variant={getStatusColor(appointment.status)}>
+                  {appointment.status}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  {appointment.startTime.toLocaleDateString()}
+                </div>
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Clock className="mr-2 h-4 w-4" />
+                  {appointment.startTime.toLocaleTimeString()} - {appointment.endTime.toLocaleTimeString()}
+                </div>
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <User className="mr-2 h-4 w-4" />
+                  {appointment.installerName || 'Unassigned'}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       <AppointmentDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
         appointment={selectedAppointment}
-        onSave={(appointment) => {
-          if (selectedAppointment) {
-            handleAppointmentUpdate(appointment);
-          } else {
-            setAppointments([...appointments, { ...appointment, id: Date.now().toString() }]);
-          }
-          setSelectedAppointment(null);
-          setIsDialogOpen(false);
-        }}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSave={handleSave}
       />
     </div>
   );
