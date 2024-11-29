@@ -1,0 +1,168 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Core colors - Geist inspired */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --radius: 0.5rem;
+
+    /* Status colors */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 0%;
+    --info: 214 100% 48%;
+    --info-foreground: 0 0% 100%;
+
+    /* Chart colors - Harmonious palette */
+    --chart-1: var(--primary);
+    --chart-2: 262 83% 58%;
+    --chart-3: 142 76% 36%;
+    --chart-4: 48 96% 53%;
+    --chart-5: 326 100% 60%;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 0%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Chart customizations */
+  .recharts-cartesian-grid-horizontal line,
+  .recharts-cartesian-grid-vertical line {
+    @apply stroke-border;
+  }
+
+  .recharts-text {
+    @apply fill-muted-foreground text-xs;
+  }
+
+  /* Chart colors */
+  .recharts-default-color-0 {
+    @apply fill-primary stroke-primary;
+  }
+
+  .recharts-default-color-1 {
+    color: hsl(var(--chart-2));
+    fill: hsl(var(--chart-2));
+    stroke: hsl(var(--chart-2));
+  }
+
+  .recharts-default-color-2 {
+    color: hsl(var(--chart-3));
+    fill: hsl(var(--chart-3));
+    stroke: hsl(var(--chart-3));
+  }
+
+  .recharts-default-color-3 {
+    color: hsl(var(--chart-4));
+    fill: hsl(var(--chart-4));
+    stroke: hsl(var(--chart-4));
+  }
+
+  .recharts-default-color-4 {
+    color: hsl(var(--chart-5));
+    fill: hsl(var(--chart-5));
+    stroke: hsl(var(--chart-5));
+  }
+
+  /* Chart components */
+  .recharts-line {
+    @apply !stroke-current;
+  }
+
+  .recharts-bar {
+    @apply !fill-current;
+  }
+
+  .recharts-pie {
+    @apply !fill-current;
+  }
+
+  .recharts-area {
+    @apply !fill-current/10 !stroke-current;
+  }
+
+  .recharts-tooltip-wrapper {
+    @apply !shadow-lg;
+  }
+
+  .recharts-default-tooltip {
+    @apply bg-background border border-border rounded-lg shadow-lg !important;
+  }
+
+  .recharts-tooltip-label {
+    @apply text-foreground !important;
+  }
+
+  .recharts-tooltip-item {
+    @apply text-current !important;
+  }
+
+  .recharts-dot {
+    @apply !fill-current !stroke-background;
+  }
+
+  .recharts-active-dot {
+    @apply !fill-current !stroke-background;
+  }
+}
+
+@layer components {
+  /* Status colors - Vercel inspired */
+  .status-passed {
+    @apply bg-[#0070F3]/10 text-[#0070F3] border-[#0070F3]/20;
+  }
+  .status-failed {
+    @apply bg-[#E00]/10 text-[#E00] border-[#E00]/20;
+  }
+  .status-pending {
+    @apply bg-[#F5A623]/10 text-[#F5A623] border-[#F5A623]/20;
+  }
+}
