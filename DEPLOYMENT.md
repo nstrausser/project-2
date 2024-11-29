@@ -8,11 +8,17 @@
 ## Setup Steps
 
 1. Environment Variables
-   In your Vercel project settings, add these environment variables:
+   In your Vercel project settings (Settings > Environment Variables), add:
    ```
    VITE_SUPABASE_URL=your_supabase_project_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
+   
+   To find these values:
+   1. Go to your Supabase project dashboard
+   2. Click on Settings > API
+   3. Copy the "Project URL" for VITE_SUPABASE_URL
+   4. Copy the "anon public" key for VITE_SUPABASE_ANON_KEY
 
 2. Deployment Configuration
    - Connect your GitHub repository to Vercel
@@ -44,12 +50,13 @@ Common issues and solutions:
    - Check build output
 
 2. Environment Variables
-   - Verify they're properly set in Vercel
-   - Check naming matches .env.example
+   - Double-check variable names match exactly
+   - Ensure values are properly copied from Supabase
+   - Variables should be set in Production and Preview environments
 
 3. API Connection Issues
    - Verify Supabase URL and key
-   - Check CORS settings
+   - Check CORS settings in Supabase
 
 ## Monitoring
 
@@ -66,3 +73,11 @@ To update the deployed application:
 4. Verify changes in production
 
 For manual deployments:
+```bash
+vercel
+```
+
+For production deployments:
+```bash
+vercel --prod
+```
