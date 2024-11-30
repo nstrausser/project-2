@@ -8,57 +8,30 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { AppointmentDialog } from './AppointmentDialog';
-import type { Appointment } from '@/types/appointment';
 import { Calendar, Clock, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-
-const mockAppointments: Appointment[] = [
-  {
-    id: '1',
-    title: 'Full Vehicle PPF',
-    description: 'Complete vehicle protection film installation',
-    startTime: new Date('2024-03-20T09:00:00'),
-    endTime: new Date('2024-03-20T17:00:00'),
-    customerId: 'cust1',
-    customerName: 'John Doe',
-    installerId: 'inst1',
-    installerName: 'Mike Smith',
-    status: 'scheduled',
-    vehicleInfo: {
-      make: 'Tesla',
-      model: 'Model 3',
-      year: '2023',
-      color: 'Red',
-    },
-    services: ['Full Front PPF', 'Door Edges'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  // Add more mock appointments as needed
-];
+import { useAppointments } from '@/hooks/useAppointments';
+import { LoadingScreen } from '@/components/LoadingScreen';
 
 export default function AppointmentsView() {
-  const [appointments, setAppointments] = useState<Appointment[]>(mockAppointments);
+  const { appointments, loading, createAppointment, updateAppointment } = useAppointments();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | undefined>();
 
-  const handleSave = (appointmentData: Partial<Appointment>) => {
-    if (selectedAppointment) {
-      // Update existing appointment
-      setAppointments(appointments.map(app => 
-        app.id === selectedAppointment.id 
-          ? { ...app, ...appointmentData }
-          : app
-      ));
-    } else {
-      // Create new appointment
-      const newAppointment: Appointment = {
-        id: Math.random().toString(36).substr(2, 9),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        ...appointmentData,
-      } as Appointment;
-      setAppointments([...appointments, newAppointment]);
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  const handleSave = async (appointmentData: Partial<Appointment>) => {
+    try {
+      if (selectedAppointment) {
+        await updateAppointment(selectedAppointment.id, appointmentData);
+      } else {
+        await createAppointment(appointmentData);
+      }
+      setDialogOpen(false);
+    } catch (error) {
+      console.error('Failed to save appointment:', error);
     }
   };
 
