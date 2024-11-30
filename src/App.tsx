@@ -21,6 +21,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Toaster } from '@/components/ui/toaster';
 import ProfileSettings from '@/components/settings/ProfileSettings';
 import AppointmentsView from '@/components/appointments/AppointmentsView';
+import AuthCallback from '@/components/auth/AuthCallback';
 
 // Export the View type for use in other components
 export type { View } from '@/types';
@@ -44,6 +45,7 @@ export default function App() {
           <ThemeProvider>
             <Routes>
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
               <Route
                 path="/"
                 element={
